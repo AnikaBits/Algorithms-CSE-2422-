@@ -1,47 +1,52 @@
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
-void Activeselection(int s[],int f[],int n)
-{
-    for(int i=0;i<n-1;i++)
-    {
-        for(int j=i+1;j<n;j++)
-        {
-            if(f[i]>f[j]){
-                     swap(f[i],f[j]);
-                swap(s[i],s[j]);
 
-            }
+void selectionSort(int start[], int finish[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int minIndex = i;
+        for (int j = i + 1; j < n; j++) {
+            if (finish[j] < finish[minIndex])
+                minIndex = j;
         }
-    }
-    int j=0;
-    cout<<j+1<<" ";
 
- for(int i=1;i<n;i++){
-    if(s[i]>=f[j])
- {
-     cout<<i+1<<" ";
-     j=i;
- }
+        int temp = finish[minIndex];
+        finish[minIndex] = finish[i];
+        finish[i] = temp;
+        
+        temp = start[minIndex];
+        start[minIndex] = start[i];
+        start[i] = temp;
+    }
 }
-cout<<endl;
-}
+
 int main() {
     int n;
-    cout<<"number of activities:";
-    cin>>n;
-    int s[n],f[n];
-    for(int i=0;i<n;i++)
-    {
-        cin>>s[i];
+    cin >> n;
+
+    int start[n], finish[n];
+
+    cout << "Enter start times: ";
+    for (int i = 0; i < n; i++) cin >> start[i];
+
+    cout << "Enter finish times: ";
+    for (int i = 0; i < n; i++) cin >> finish[i];
+
+   
+    selectionSort(start, finish, n);
+
+    cout << "\nSelected Activities:\n";
+
+    cout << "(" << start[0] << ", " << finish[0] << ")" << endl;
+    int lastFinish = finish[0];
+
+    
+    for (int i = 1; i < n; i++) {
+        if (start[i] >= lastFinish) {
+            cout << "(" << start[i] << ", " << finish[i] << ")" << endl;
+            lastFinish = finish[i];
+        }
     }
-    for(int i=0;i<n;i++)
-    {
-        cin>>f[i];
-    }
-    Activeselection( s,f, n);
+
     return 0;
 }
-
-
-
 
