@@ -1,0 +1,106 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+class Node {
+public:
+    char ch;
+    int freq;
+    Node *left, *right;
+
+    Node(char c, int f) {
+        ch = c;
+        freq = f;
+        left = right = NULL;
+    }
+};
+
+
+class Compare {
+public:
+    bool operator()(Node* a, Node* b) {
+        return a->freq > b->freq;
+    }
+};
+
+class Huffman {
+private:
+    map<char,int> freq;
+    map<char,string> code;
+    Node* root;
+
+    void generate(Node* node, string str) {
+        if (!node) return;
+
+        if (!node->left && !node->right)
+            code[node->ch] = str;
+
+        generate(node->left, str + "0");
+        generate(node->right, str + "1");
+    }
+
+public:
+    void build(string text) {
+        for(char c : text)
+            if(c != ' ')
+                freq[c]++;
+
+        priority_queue<Node*, vector<Node*>, Compare> pq;
+        for(auto it : freq)
+            pq.push(new Node(it.first, it.second));
+
+        while(pq.size() > 1) {
+            Node* l = pq.top(); pq.pop();
+            Node* r = pq.top(); pq.pop();
+
+            Node* p = new Node('$', l->freq + r->freq);
+            p->left = l;
+            p->right = r;
+            pq.push(p);
+        }
+
+        root = pq.top();
+        generate(root, "");
+    }
+
+    void display() {
+        cout << "\nChar  Freq    Code   CodeLen   BitsUsed\n";
+        cout << "----------------------------------\n";
+
+        int messageBits = 0;
+        for(auto it : code) {
+            int len = it.second.length();
+            int bitsUsed = freq[it.first] * len;
+
+            cout << " " << it.first << "\t"
+                 << freq[it.first] << "\t"
+                 << it.second << "\t"
+                 << len << "\t   "
+                 << bitsUsed << endl;
+
+            messageBits += bitsUsed;
+        }
+
+        int tableBits = 52;
+        cout << "----------------------------------\n";
+        cout << "Message bits = " << messageBits << endl;
+        cout << "Table bits   = " << tableBits << endl;
+        cout << "Variable Length = "
+             << messageBits << " + "
+             << tableBits << " = "
+             << messageBits + tableBits << " bits\n";
+    }
+};
+
+int main() {
+    string text;
+    cout << "Enter text: ";
+    getline(cin, text);
+
+    Huffman h;
+    h.build(text);
+    h.display();
+
+    return 0;
+}
+
