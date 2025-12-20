@@ -15,7 +15,6 @@ public:
     }
 };
 
-
 class Compare {
 public:
     bool operator()(Node* a, Node* b) {
@@ -29,6 +28,7 @@ private:
     map<char,string> code;
     Node* root;
 
+    
     void generate(Node* node, string str) {
         if (!node) return;
 
@@ -41,14 +41,18 @@ private:
 
 public:
     void build(string text) {
+
+        
         for(char c : text)
             if(c != ' ')
                 freq[c]++;
 
+      
         priority_queue<Node*, vector<Node*>, Compare> pq;
         for(auto it : freq)
             pq.push(new Node(it.first, it.second));
 
+        
         while(pq.size() > 1) {
             Node* l = pq.top(); pq.pop();
             Node* r = pq.top(); pq.pop();
@@ -56,6 +60,7 @@ public:
             Node* p = new Node('$', l->freq + r->freq);
             p->left = l;
             p->right = r;
+
             pq.push(p);
         }
 
@@ -64,10 +69,12 @@ public:
     }
 
     void display() {
-        cout << "\nChar  Freq    Code   CodeLen   BitsUsed\n";
-        cout << "----------------------------------\n";
+        cout << "\nChar  Freq   Code   CodeLen   BitsUsed\n";
+        cout << "--------------------------------------\n";
 
         int messageBits = 0;
+        int tableBits = 0;
+
         for(auto it : code) {
             int len = it.second.length();
             int bitsUsed = freq[it.first] * len;
@@ -75,20 +82,20 @@ public:
             cout << " " << it.first << "\t"
                  << freq[it.first] << "\t"
                  << it.second << "\t"
-                 << len << "\t   "
+                 << len << "\t     "
                  << bitsUsed << endl;
 
             messageBits += bitsUsed;
+
+           
+            tableBits += 8 + len;   
         }
 
-        int tableBits = 52;
-        cout << "----------------------------------\n";
+        cout << "--------------------------------------\n";
         cout << "Message bits = " << messageBits << endl;
         cout << "Table bits   = " << tableBits << endl;
-        cout << "Variable Length = "
-             << messageBits << " + "
-             << tableBits << " = "
-             << messageBits + tableBits << " bits\n";
+        cout << "Total bits (Compressed) = "
+             << messageBits + tableBits << endl;
     }
 };
 
@@ -103,4 +110,3 @@ int main() {
 
     return 0;
 }
-
